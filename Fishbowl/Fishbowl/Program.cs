@@ -10,14 +10,14 @@ namespace Fishbowl
         {
             Aquarium aquarium = new Aquarium();
             aquarium.Menu();
-
         }
     }
 
     class Aquarium
     {
-        private List<Fish> pisces = new List<Fish>();
         private static Random _random = new Random();
+        private List<Fish> pisces = new List<Fish>();
+
 
         public Aquarium()
         {
@@ -46,18 +46,18 @@ namespace Fishbowl
 
                 switch (userInput)
                 {
-                    case "1":
+                    case CommandAddFish:
                         AddFish();
 
                         break;
 
-                    case "2":
+                    case CommandRemoveFish:
                         RemoveFish();
 
                         break;
 
-                    case "3":
-                        lifeCycle();
+                    case CommandLifecycle:
+                        LifeCycle();
 
                         break;
 
@@ -76,28 +76,43 @@ namespace Fishbowl
 
         private void ShowFish()
         {
+            int shift = 1;
+
             for (int i = 0; i < pisces.Count; i++)
             {
-                Console.Write($"{i + 1} ");
+                Console.Write($"{i + shift} ");
                 pisces[i].ShowInfo();
             }
         }
 
         private void RemoveFish()
         {
-            Fish fish;
-
             ShowFish();
             Console.WriteLine("Введите номер рыбы");
 
             string userInput = Console.ReadLine();
             int.TryParse(userInput, out int index);
 
-            fish = pisces[index - 1];
+            TryGetFish(out Fish fish, index);
             pisces.Remove(fish);
         }
 
-        private void lifeCycle()
+        private bool TryGetFish(out Fish fish, int index)
+        {
+            if (index <= 0 || index > pisces.Count)
+            {
+                Console.WriteLine("fish not found");
+                fish = null;
+                return false;
+            }
+            else
+            {
+                fish = pisces[index - 1];
+                return true;
+            }
+        }
+
+        private void LifeCycle()
         {
             ShowFish();
 
@@ -133,12 +148,12 @@ namespace Fishbowl
             string userInput = Console.ReadLine();
 
             int.TryParse(userInput, out int count);
-            isNumber(count);
+            IsNumber(count);
 
             Create(count, pisces);
         }
 
-        private bool isNumber(int count)
+        private bool IsNumber(int count)
         {
             if (count <= 0)
             {
@@ -155,21 +170,24 @@ namespace Fishbowl
     abstract class Fish
     {
         private static Random _random = new Random();
+        private int _age = 20;
+        private int _addAge = 10;
+
         public Fish(int lifeExpectancy)
         {
-            Age = _random.Next(20);
+            Age = _random.Next(_age);
             LifeExpectancy = lifeExpectancy;
         }
 
         public int Age { get; protected set; }
-        public bool IsDead => Age >= LifeExpectancy;
         public int LifeExpectancy { get; }
+        public bool IsDead => Age >= LifeExpectancy;
 
         public abstract Fish Clone();
 
         public void AddAge()
         {
-            Age += _random.Next(10);
+            Age += _random.Next(_addAge);
         }
 
         public void ShowInfo()
