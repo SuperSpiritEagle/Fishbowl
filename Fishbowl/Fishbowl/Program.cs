@@ -16,11 +16,11 @@ namespace Fishbowl
     class Aquarium
     {
         private static Random _random = new Random();
-        private List<Fish> pisces = new List<Fish>();
+        private List<Fish> _fish = new List<Fish>();
 
         public Aquarium()
         {
-            Create(3, pisces);
+            Create(3, _fish);
         }
 
         public void Menu()
@@ -35,10 +35,10 @@ namespace Fishbowl
             while (isExit)
             {
                 Console.WriteLine();
-                Console.WriteLine($"[{CommandAddFish}]: Добавить рыб");
-                Console.WriteLine($"[{CommandRemoveFish}]: Достать рыбу из аквариума");
-                Console.WriteLine($"[{CommandLifecycle}]: Посмтореть жизненный цикл");
-                Console.WriteLine($"[{CommandExit}]: Выход из программы");
+                Console.WriteLine($"[{CommandAddFish}] Добавить рыб");
+                Console.WriteLine($"[{CommandRemoveFish}] Достать рыбу из аквариума");
+                Console.WriteLine($"[{CommandLifecycle}] Посмтореть жизненный цикл");
+                Console.WriteLine($"[{CommandExit}] Выход из программы");
 
                 string userInput = Console.ReadLine();
                 Console.Clear();
@@ -73,28 +73,31 @@ namespace Fishbowl
             }
         }
 
-        private void ShowFish()
+        private void ShowFishs()
         {
             int shift = 1;
 
-            for (int i = 0; i < pisces.Count; i++)
+            for (int i = 0; i < _fish.Count; i++)
             {
                 Console.Write($"{i + shift} ");
-                pisces[i].ShowInfo();
+                _fish[i].ShowInfo();
             }
         }
 
         private void RemoveFish()
         {
-            ShowFish();
+            ShowFishs();
 
             Console.WriteLine("Введите номер рыбы");
             string userInput = Console.ReadLine();
 
             if (int.TryParse(userInput, out int index))
             {
-                TryGetFish(out Fish fish, index);
-                pisces.Remove(fish);
+                if (TryGetFish(out Fish fish, index))
+                {
+                    Console.WriteLine($"{fish.GetType().Name} покинул аквариум");
+                    _fish.Remove(fish);
+                }
             }
             else
             {
@@ -104,7 +107,7 @@ namespace Fishbowl
 
         private bool TryGetFish(out Fish fish, int index)
         {
-            if (index <= 0 || index > pisces.Count)
+            if (index <= 0 || index > _fish.Count)
             {
                 Console.WriteLine("fish not found");
                 fish = null;
@@ -112,28 +115,26 @@ namespace Fishbowl
             }
             else
             {
-                fish = pisces[index - 1];
+                fish = _fish[index - 1];
                 return true;
             }
         }
 
         private void LifeCycle()
         {
-            ShowFish();
+            ShowFishs();
 
-            for (int i = 0; i < pisces.Count; i++)
+            for (int i = 0; i < _fish.Count; i++)
             {
-                pisces[i].AddAge();
-                Destroy(i);
-            }
-        }
-
-        private void Destroy(int index)
-        {
-            if (pisces[index].IsDead)
-            {
-                Console.WriteLine($"{pisces[index].GetType().Name} Отправился на небеса. Возраст :{pisces[index].Age}");
-                pisces.Remove(pisces[index]);
+                if (_fish[i].IsDead)
+                {
+                    Console.WriteLine($"{_fish[i].GetType().Name} Отправился на небеса. Возраст: {_fish[i].Age}");
+                    _fish.Remove(_fish[i]);
+                }
+                else
+                {
+                    _fish[i].AddAge();
+                }
             }
         }
 
@@ -154,7 +155,7 @@ namespace Fishbowl
 
             if (int.TryParse(userInput, out int count))
             {
-                Create(count, pisces);
+                Create(count, _fish);
             }
             else
             {
@@ -188,7 +189,7 @@ namespace Fishbowl
 
         public void ShowInfo()
         {
-            Console.WriteLine($"{GetType().Name} , Возраст : {Age} , средняя продолжительность жизни : {LifeExpectancy} лет");
+            Console.WriteLine($"{GetType().Name}, Возраст: {Age}, средняя продолжительность жизни: {LifeExpectancy} лет");
         }
     }
 
