@@ -18,10 +18,9 @@ namespace Fishbowl
         private static Random _random = new Random();
         private List<Fish> pisces = new List<Fish>();
 
-
         public Aquarium()
         {
-            Create(5, pisces);
+            Create(3, pisces);
         }
 
         public void Menu()
@@ -88,13 +87,19 @@ namespace Fishbowl
         private void RemoveFish()
         {
             ShowFish();
+
             Console.WriteLine("Введите номер рыбы");
-
             string userInput = Console.ReadLine();
-            int.TryParse(userInput, out int index);
 
-            TryGetFish(out Fish fish, index);
-            pisces.Remove(fish);
+            if (int.TryParse(userInput, out int index))
+            {
+                TryGetFish(out Fish fish, index);
+                pisces.Remove(fish);
+            }
+            else
+            {
+                Console.WriteLine("Error");
+            }
         }
 
         private bool TryGetFish(out Fish fish, int index)
@@ -147,22 +152,13 @@ namespace Fishbowl
             Console.WriteLine("Введите количество рыб");
             string userInput = Console.ReadLine();
 
-            int.TryParse(userInput, out int count);
-            IsNumber(count);
-
-            Create(count, pisces);
-        }
-
-        private bool IsNumber(int count)
-        {
-            if (count <= 0)
+            if (int.TryParse(userInput, out int count))
             {
-                Console.WriteLine("Ошибка! Введены не коректный данные. Повторите попытку.");
-                return false;
+                Create(count, pisces);
             }
             else
             {
-                return true;
+                Console.WriteLine("Error");
             }
         }
     }
