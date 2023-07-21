@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Fishbowl
 {
@@ -16,11 +15,11 @@ namespace Fishbowl
     class Aquarium
     {
         private static Random _random = new Random();
-        private List<Fish> _fish = new List<Fish>();
+        private List<Fish> _fishes = new List<Fish>();
 
         public Aquarium()
         {
-            Create(3, _fish);
+            Create(3, _fishes);
         }
 
         public void Menu()
@@ -56,7 +55,7 @@ namespace Fishbowl
                         break;
 
                     case CommandLifecycle:
-                        LifeCycle();
+                        LifeCycle(); RemoveDeadFish();
 
                         break;
 
@@ -73,20 +72,20 @@ namespace Fishbowl
             }
         }
 
-        private void ShowFishs()
+        private void ShowFishes()
         {
             int shift = 1;
 
-            for (int i = 0; i < _fish.Count; i++)
+            for (int i = 0; i < _fishes.Count; i++)
             {
                 Console.Write($"{i + shift} ");
-                _fish[i].ShowInfo();
+                _fishes[i].ShowInfo();
             }
         }
 
         private void RemoveFish()
         {
-            ShowFishs();
+            ShowFishes();
 
             Console.WriteLine("Введите номер рыбы");
             string userInput = Console.ReadLine();
@@ -96,7 +95,7 @@ namespace Fishbowl
                 if (TryGetFish(out Fish fish, index))
                 {
                     Console.WriteLine($"{fish.GetType().Name} покинул аквариум");
-                    _fish.Remove(fish);
+                    _fishes.Remove(fish);
                 }
             }
             else
@@ -107,34 +106,43 @@ namespace Fishbowl
 
         private bool TryGetFish(out Fish fish, int index)
         {
-            if (index <= 0 || index > _fish.Count)
+            if (index <= 0 || index > _fishes.Count)
             {
-                Console.WriteLine("fish not found");
+                Console.WriteLine("Error");
                 fish = null;
                 return false;
             }
             else
             {
-                fish = _fish[index - 1];
+                fish = _fishes[index - 1];
                 return true;
             }
         }
 
         private void LifeCycle()
         {
-            ShowFishs();
+            ShowFishes();
 
-            for (int i = 0; i < _fish.Count; i++)
+            for (int i = 0; i < _fishes.Count; i++)
             {
-                if (_fish[i].IsDead)
+                _fishes[i].AddAge();
+            }
+        }
+
+        private void RemoveDeadFish()
+        {
+            for (int i = 0; i < _fishes.Count; i++)
+            {
+                if (_fishes[i].IsDead)
                 {
-                    Console.WriteLine($"{_fish[i].GetType().Name} Отправился на небеса. Возраст: {_fish[i].Age}");
-                    _fish.Remove(_fish[i]);
+                    Console.WriteLine($"{_fishes[i].GetType().Name} Отправился на небеса. Возраст: {_fishes[i].Age}");
+                    _fishes.Remove(_fishes[i]);
                 }
-                else
-                {
-                    _fish[i].AddAge();
-                }
+            }
+
+            if (_fishes.Count <= 0)
+            {
+                Console.WriteLine("Акварим пуст");
             }
         }
 
@@ -155,7 +163,7 @@ namespace Fishbowl
 
             if (int.TryParse(userInput, out int count))
             {
-                Create(count, _fish);
+                Create(count, _fishes);
             }
             else
             {
